@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" 
+              integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" 
+              crossorigin="anonymous"/>
+        <script
+            src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+        <script>
+
+            $(document).ready(function (e) {
+                var date = new Date();
+                date.setDate(date.getDate() + 1);
+                if((date.getMonth() + 1)<10){
+                    var finalDate =date.getFullYear()+ "-" + "0" +  (date.getMonth() + 1) + "-" + date.getDate();
+                }else{
+                    var finalDate =date.getFullYear()+ "-" + (date.getMonth() + 1) + "-" + date.getDate();
+                }
+                
+                document.getElementById("date").innerHTML = finalDate;
+                document.getElementById("city").innerHTML = "Toronto,Canada";
+                $.ajax({
+                    url: "http://localhost:8080/weatherAPI/api/weather/Toronto/tom",
+                    type: "GET",
+                    dataType: "json"
+                }).done(function (resp) {
+                    var resultTemp = "";
+                    var resultDes = "";
+                    resp.list.forEach(function (item) {
+                        if (item.dt_txt.indexOf(finalDate) >= 0) {
+                            var temp = Math.round(item.main.temp - 273.15);
+                            var unicode = "&#8451;";
+                            resultTemp += "<th>" + temp + unicode + "</th>";
+                            document.getElementById("temp").innerHTML = resultTemp;
+
+                            var weather = item.weather[0].description.charAt(0).toUpperCase() + item.weather[0].description.slice(1);
+                            resultDes += "<th>" + weather + "</th>";
+                            document.getElementById("weather").innerHTML = resultDes;
+                        }
+                    });
+                });
+
+                //search
+                $('#searchByCity').click(function (e) {
+                     e.preventDefault();
+                    var cityName = document.getElementById("search").value;
+                    $.ajax({
+                        url: "http://localhost:8080/weatherAPI/api/weather/city/tom/" + cityName,
+                        type: "GET",
+                        dataType: "json"
+                    }).done(function (resp) {
+                        document.getElementById("city").innerHTML = cityName.toUpperCase() + "," + resp.city.country;
+                        var resultTemp = "";
+                        var resultDes = "";
+                        resp.list.forEach(function (item) {
+                            if (item.dt_txt.indexOf(finalDate) >= 0) {
+                                var temp = Math.round(item.main.temp - 273.15);
+                                var unicode = "&#8451;";
+                                resultTemp += "<th>" + temp + unicode + "</th>";
+                                document.getElementById("temp").innerHTML = resultTemp;
+
+                                var weather = item.weather[0].description.charAt(0).toUpperCase() + item.weather[0].description.slice(1);
+                                resultDes += "<th>" + weather + "</th>";
+                                document.getElementById("weather").innerHTML = resultDes;
+                            }
+                        });
+                    });
+                });
+            });
+
+        </script>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand">The Weather Channel</a>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="index.html">Today</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="tomorrow.html">Tomorrow <span class="sr-only">(current)</span></a>
+                    </li>
+                </ul>
+                <form class="form-inline my-2 my-lg-0">
+                    <input class="form-control mr-sm-2" id="search" placeholder="Enter city to search" aria-label="Search">
+                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit" id="searchByCity">Search</button>
+                </form>
+            </div>
+        </nav>
+        <div id="toronto">
+            <div class="card" style="width: 900px; margin-left: 20%; margin-top: 5%;">
+                <div class="card-body">
+                    <h5 class="card-title" style="text-align: center" id="city"></h5>
+                    <h6 class="card-subtitle mb-2 text-muted" style="text-align: center" id="date"></h6>
+                    <table class="table table-bordered" style="padding-left: 10px;padding-right: 300px">
+                        <thead>
+                            <tr>
+                                <th scope="col">00:00</th>
+                                <th scope="col">03:00</th>
+                                <th scope="col">06:00</th>
+                                <th scope="col">09:00</th>
+                                <th scope="col">12:00</th>
+                                <th scope="col">15:00</th>
+                                <th scope="col">18:00</th>
+                                <th scope="col">21:00</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr id="temp">
+                            </tr>
+                            <tr id="weather">
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Spring MVC Demo</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" 
+              integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" 
+              crossorigin="anonymous"/>
+        <script
+            src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+
+        <script>
+
+            $(document).ready(function (e) {
+                document.getElementById("date").innerHTML = new Date();
+                document.getElementById("city").innerHTML = "Toronto,Canada";
+                $.ajax({
+                    url: "http://localhost:8080/weatherAPI/api/weather/Toronto",
+                    type: "GET",
+                    dataType: "json"
+                }).done(function (resp) {
+                    console.log(resp);
+                    var temp = Math.round(resp.main.temp - 273.15);
+                    var unicode = "&#8451;";
+                    document.getElementById("temp").innerHTML = temp + unicode;
+                    var speed = resp.wind.speed;
+                    document.getElementById("wind").innerHTML = speed;
+                    document.getElementById("visibility").innerHTML = resp.visibility;
+                    document.getElementById("humidity").innerHTML = resp.main.humidity;
+                    document.getElementById("pressure").innerHTML = resp.main.pressure;
+                    var description = resp.weather[0].description;
+                    document.getElementById("currentWeather").innerHTML = description.charAt(0).toUpperCase() + description.slice(1);
+                });
+
+                //search
+                $('#searchByCity').click(function (e) {
+                    e.preventDefault();
+                    var cityName = document.getElementById("search").value;
+                    document.getElementById("date").innerHTML = new Date();
+                    $.ajax({
+                        url: "http://localhost:8080/weatherAPI/api/weather/city/" + cityName,
+                        type: "GET",
+                        dataType: "json"
+                    }).done(function (resp) {
+                        console.log(resp);
+                        document.getElementById("city").innerHTML = cityName.toUpperCase() + "," + resp.sys.country;
+                        var temp = Math.round(resp.main.temp - 273.15);
+                        var unicode = "&#8451;";
+                        document.getElementById("temp").innerHTML = temp + unicode;
+                        var speed = resp.wind.speed;
+                        document.getElementById("wind").innerHTML = speed;
+                        document.getElementById("visibility").innerHTML = resp.visibility;
+                        document.getElementById("humidity").innerHTML = resp.main.humidity;
+                        document.getElementById("pressure").innerHTML = resp.main.pressure;
+                        var description = resp.weather[0].description;
+                        document.getElementById("currentWeather").innerHTML = description.charAt(0).toUpperCase() + description.slice(1);
+                    });
+                });
+            });
+
+        </script>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand">The Weather Channel</a>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">Today <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="tomorrow.html">Tomorrow</a>
+                    </li>
+                </ul>
+                <form class="form-inline my-2 my-lg-0">
+                    <input class="form-control mr-sm-2" id="search" placeholder="Enter city to search" aria-label="Search">
+                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit" id="searchByCity">Search</button>
+                </form>
+            </div>
+        </nav>
+        <div id="toronto">
+            <div class="card" style="width: 800px; margin-left: 20%; margin-top: 5%;">
+                <div class="card-body">
+
+                    <h5 class="card-title" style="text-align: center" id="city"></h5>
+                    <h6 class="card-subtitle mb-2 text-muted" style="text-align: center" id="date"></h6>
+                    <h6 id="temp"></h6>
+                    <p class="card-text" id="currentWeather"></p>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Wind: <span id="wind"></span></li>
+                    <li class="list-group-item">Humidity:<span id="humidity"></span></li>
+                    <li class="list-group-item">Pressure: <span id="pressure"></span></li>
+                    <li class="list-group-item">Visibility: <span id="visibility"></span></li>
+                </ul>
+            </div>
+        </div>
+
+    </body>
+</html>
