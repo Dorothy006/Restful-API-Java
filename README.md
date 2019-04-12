@@ -1,4 +1,7 @@
 # Restful-API-Java
+
+Maven project for webServices
+J2EE web project for client
 ### Home page: show today’s weather in Toronto
  <p><img src="screenshots/1.png"></p>
 
